@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "pokeapi",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/paul-verkada/PokeAPI.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "098ebf40997eb7f470615f2674506786905aa579"
+      }
+    }
+  ],
+  "version" : 2
+}
