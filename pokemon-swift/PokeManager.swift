@@ -13,16 +13,22 @@ class PokeManager {
     var dataSource:[Pokemon] = []
     var imageCache:[String:UIImage] = [:]
     let queue = DispatchQueue(label: "my-queue", qos: .userInteractive)
+    let total:Int = 200
+    let pageSize:Int = 20
     private init() {
         
     }
     
     func getCount()->Int {
-        return self.dataSource.count
+        return queue.sync {
+            return self.dataSource.count
+        }
     }
     
     func getItemByIndex(_ index:Int) -> Pokemon{
-        return self.dataSource[index]
+        return queue.sync{
+            return self.dataSource[index]
+        }
     }
     
     func getImageFromCache(_ url:String) -> UIImage? {
@@ -48,6 +54,7 @@ class PokeManager {
         if(index >= self.dataSource.count) {
             return nil
         }
+       // print("download (\(index)")
         let poke = self.dataSource[index]
         let url = poke.sprites.frontDefault.absoluteString
         
@@ -74,22 +81,26 @@ class PokeManager {
     
     func listPokemon(compeletion: @escaping () -> Void) {
         
-        PokeAPI.listPokemon(limit: 30) { result in
-            switch result {
-            case .success(let pokemon):
-                print("-------")
-                print(pokemon[0])
-                self.dataSource.append(contentsOf: pokemon)
-                print(self.dataSource.count)
-                DispatchQueue.main.async {
-                    compeletion()
+            PokeAPI.listPokemon(limit: 30, offset: self.getCount()) { result in
+                switch result {
+                case .success(let pokemon):
+                    print("-------")
+                    print(pokemon)
+                    self.queue.sync {
+                        self.dataSource.append(contentsOf: pokemon)
+                    }
+                    print(self.dataSource.count)
+                    DispatchQueue.main.async {
+                        compeletion()
+                    }
+                    
+                    
+                case .failure(let error):
+                    print(error)
+                    return
                 }
-                
-            case .failure(let error):
-                print(error)
             }
-        }
-        
+            
         
     }
     

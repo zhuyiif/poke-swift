@@ -9,7 +9,7 @@
 
 import UIKit
 
-class ViewController: UIViewController,UICollectionViewDelegate,UICollectionViewDataSource {
+class ViewController: UIViewController,UICollectionViewDelegate,UICollectionViewDataSource, UIScrollViewDelegate{
     
     private let itemsPerRow: CGFloat = 3
     
@@ -31,8 +31,10 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-       // print(indexPath)
+        print("cell for \(indexPath)")
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "pokeCell", for: indexPath) as! PokeCell
+        
+        
         let image = PokeManager.shared.downloadImage(indexPath: indexPath)
         if let image = image {
             cell.imageView.image = image
@@ -41,6 +43,15 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         return cell
     }
     
+  
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        let mgr:PokeManager = PokeManager.shared
+        mgr.listPokemon(compeletion: {
+            self.collectionView.reloadData()
+        })
+    }
+    
+   
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let image = PokeManager.shared.downloadImage(indexPath: indexPath)
         self.detailImageView.image = image
