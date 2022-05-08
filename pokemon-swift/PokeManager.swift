@@ -74,7 +74,7 @@ class PokeManager {
     
     func listPokemon(compeletion: @escaping () -> Void) {
         
-        PokeAPI.listPokemon() { result in
+        PokeAPI.listPokemon(limit: 30) { result in
             switch result {
             case .success(let pokemon):
                 print("-------")

@@ -20,16 +20,24 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         right: 0.0)
     
     
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return PokeManager.shared.getCount()
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+       // print(indexPath)
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "pokeCell", for: indexPath) as! PokeCell
         let image = PokeManager.shared.downloadImage(indexPath: indexPath)
         if let image = image {
             cell.imageView.image = image
         }
+     
         return cell
     }
     
@@ -63,7 +71,6 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         }
     }
     
-    
 }
 
 
@@ -76,10 +83,10 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
         sizeForItemAt indexPath: IndexPath
     ) -> CGSize {
         
-        let availableWidth = view.frame.width
-        let widthPerItem = availableWidth / itemsPerRow - 1
+        let itemWidth = collectionView.bounds.size.width / 3
+        return CGSize(width: itemWidth, height: itemWidth)
         
-        return CGSize(width: widthPerItem, height: widthPerItem)
+
     }
     
     // 3
@@ -97,7 +104,7 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
         layout collectionViewLayout: UICollectionViewLayout,
         minimumLineSpacingForSectionAt section: Int
     ) -> CGFloat {
-        return 1
+        return 0
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
