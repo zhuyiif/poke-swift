@@ -31,6 +31,16 @@ class PokeManager {
         }
     }
     
+    func getPokeUrlByIndex(_ index:IndexPath) -> String?{
+        let index = index.row
+        if(index >= self.dataSource.count) {
+            return nil
+        }
+        return queue.sync{
+            return self.dataSource[index].sprites.frontDefault.absoluteString
+        }
+    }
+    
     func getImageFromCache(_ url:String) -> UIImage? {
         return queue.sync {
             var keyExists:Bool = false

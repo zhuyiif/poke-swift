@@ -8,6 +8,7 @@
 
 
 import UIKit
+import Kingfisher
 
 class ViewController: UIViewController,UICollectionViewDelegate,UICollectionViewDataSource, UIScrollViewDelegate{
     
@@ -24,7 +25,7 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         return 1
     }
     
-
+    
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return PokeManager.shared.getCount()
@@ -35,15 +36,17 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "pokeCell", for: indexPath) as! PokeCell
         
         
-        let image = PokeManager.shared.downloadImage(indexPath: indexPath)
-        if let image = image {
-            cell.imageView.image = image
-        }
-     
+        //        let image = PokeManager.shared.downloadImage(indexPath: indexPath)
+        //        if let image = image {
+        //            cell.imageView.image = image
+        //        }
+        
+        cell.imageView.kf.setImage(with: URL(string: PokeManager.shared.getPokeUrlByIndex(indexPath)!))
+        
         return cell
     }
     
-  
+    
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         let mgr:PokeManager = PokeManager.shared
         mgr.listPokemon(compeletion: {
@@ -51,10 +54,24 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         })
     }
     
-   
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let image = PokeManager.shared.downloadImage(indexPath: indexPath)
-        self.detailImageView.image = image
+        guard let url = URL(string: PokeManager.shared.getPokeUrlByIndex(indexPath)!) else {
+            return
+        }
+        
+        let resource = ImageResource(downloadURL: url)
+        
+        KingfisherManager.shared.retrieveImage(with: resource, options: nil, progressBlock: nil) {
+            result in
+            switch result {
+            case .success(let value):
+                self.detailImageView.image = value.image
+            case .failure(let error):
+                print("Error: \(error)")
+            }
+        }
+        
     }
     
     @IBOutlet weak var collectionView: UICollectionView!
@@ -97,7 +114,7 @@ extension ViewController: UICollectionViewDelegateFlowLayout {
         let itemWidth = collectionView.bounds.size.width / 3
         return CGSize(width: itemWidth, height: itemWidth)
         
-
+        
     }
     
     // 3
